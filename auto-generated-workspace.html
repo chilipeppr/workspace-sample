@@ -16,10 +16,20 @@
     <style type='text/css'>
 /* Workspace CSS */
 
+.sample {
+    border:2px silver dashed;
+    border-radius:4px;
+    padding:10px;
+}
+
 .com-chilipeppr-ws-hdr {
     padding:10px 15px;
 }
 
+.col-pad10 {
+    padding-left:5px;
+    padding-right:5px;
+}
 .col-nopadrt {
     padding-right:0;    
 }
@@ -27,8 +37,8 @@
 .col-nopadleft {
     padding-left:0;    
 }
-
-.well, .panel.panel-default {
+/* Feel free to remove this css tag to change the margin below the widgets */
+.well, div.panel.panel-default {
     margin-bottom:10px;
 }
 
@@ -302,7 +312,7 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
                 <!-- Left Column -->
                 <!-- Change the width by adjusting col-md-4 to be col-md-3 for skinnier, or col-md-5 for wider -->
                 <!-- You must have all columns add up to 12 since we use bootstrap's col-md technique, i.e. col-md-2, col-md-7, col-md-3 adds to 12 -->
-                <div class="col-md-4 col-nopadrt col-nopadleft">
+                <div class="col-md-4 col-pad10">
 
                     <div class="com-chilipeppr-ws-hdr well">
                         
@@ -329,7 +339,7 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
                     </div>
 
                     <div id="mywidget1-instance">
-                        <p>Widget 1 goes here</p>
+                        <p class="sample">Widget 1 goes here</p>
                     </div>
 
                     <div id="com-chilipeppr-widget-spconsole-instance">
@@ -339,21 +349,21 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
                 </div>
 
                 <!-- Center Column -->
-                <div class="col-md-5 col-nopadrt">
+                <div class="col-md-5 col-pad10">
                     <div id="mywidget2-instance">
-                        Widget 2 goes here
+                        <p class="sample" style="min-height:200px;">Widget 2 goes here</p>
                     </div>
                 </div>
 
                 <!-- Right Column -->
-                <div class="col-md-3 col-nopadrt">
+                <div class="col-md-3 col-pad10">
                     
                     <div id="com-chilipeppr-widget-serialport-instance">
                         Widget 3 goes here
                     </div>
                     
                     <div id="mywidget3-instance">
-                        Widget 3 goes here
+                        <p class="sample">Widget 3 goes here</p>
                     </div>
 
                 </div>
