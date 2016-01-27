@@ -4,7 +4,7 @@ cprequire_test(["inline:com-chilipeppr-workspace-sample"], function(ws) {
     console.log("initting workspace");
     ws.init();
     ws.loadFlashMsg();
-    $('title').html("Console Workspace");
+    $('title').html("Sample Workspace");
     $('body').css('padding', '10px');
 
 } /*end_test*/ );
@@ -62,6 +62,7 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
          * Load Flash Module so we can show flash messages.
          */
         loadFlashMsg: function() {
+            debugger;
             chilipeppr.load("#com-chilipeppr-widget-flash-instance",
                 "http://fiddle.jshell.net/chilipeppr/90698kax/show/light/",
                 function() {
