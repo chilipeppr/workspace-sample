@@ -1,7 +1,7 @@
 # com-chilipeppr-workspace-sample
 A ChiliPeppr Workspace sample.
 
-
+![alt text](screenshot.png "Screenshot")
 
 ## ChiliPeppr Workspace / sample
 
