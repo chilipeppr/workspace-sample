@@ -93,8 +93,31 @@
 cprequire_test(["inline:com-chilipeppr-workspace-sample"], function(ws) {
 
     console.log("initting workspace");
+
+    /**
+     * The Root workspace (when you see the ChiliPeppr Header) auto Loads the Flash 
+     * Widget so we can show the 3 second flash messages. However, in test mode we
+     * like to see them as well, so just load it from the cprequire_test() method
+     * so we have similar functionality when testing this workspace.
+     */
+    var loadFlashMsg = function() {
+        chilipeppr.load("#com-chilipeppr-widget-flash-instance",
+            "http://fiddle.jshell.net/chilipeppr/90698kax/show/light/",
+            function() {
+                console.log("mycallback got called after loading flash msg module");
+                cprequire(["inline:com-chilipeppr-elem-flashmsg"], function(fm) {
+                    //console.log("inside require of " + fm.id);
+                    fm.init();
+                });
+            }
+        );
+    };
+    loadFlashMsg();
+        
+    // Init workspace
     ws.init();
-    ws.loadFlashMsg();
+    
+    // Do some niceties for testing like margins on widget and title for browser
     $('title').html("Sample Workspace");
     $('body').css('padding', '10px');
 
@@ -114,22 +137,16 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
         githuburl: "http://github.com/johnlauer/workspace-nodemcu", // The backing github repo
         testurl: "http://workspace-nodemcu-johnlauer.c9users.io/workspace.html", // The standalone working widget so can view it working by itself
         /**
-         * Contains reference to the Console widget object.
-         */
-        widgetConsole: null,
-        /**
-         * Contains reference to the Serial Port JSON Server object.
-         */
-        widgetSpjs: null,
-        /**
-         * Contains reference to the Lua Editor widget.
-         */
-        widgetLuaEditor: null,
-        /**
-         * The workspace's init method. It loads the Console widget and then the SPJS widget.
+         * The workspace's init method. It loads the all the widgets contained in the workspace
+         * and inits them.
          */
         init: function() {
 
+            // Most workspaces will instantiate the Serial Port JSON Server widget
+            this.loadSpjsWidget();
+            // Create our workspace upper right corner triangle menu
+            this.loadWorkspaceMenu();
+            // Add our billboard to the menu (has name, url, picture of workspace)
             this.addBillboardToWorkspaceMenu();
 
         },
@@ -144,31 +161,50 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
             el.find('.billboard-desc').text(this.desc);
             return el;
         },
+        /**
+         * Inject the billboard into the Workspace upper right corner pulldown which
+         * follows the standard template for workspace pulldown menus.
+         */
         addBillboardToWorkspaceMenu: function() {
             // get copy of billboard
             var billboardEl = this.getBillboard();
             $('#' + this.id + ' .com-chilipeppr-ws-billboard').append(billboardEl);
         },
         /**
-         * Load Flash Module so we can show flash messages.
+         * Load the Serial Port JSON Server widget via chilipeppr.load()
          */
-        loadFlashMsg: function() {
-            debugger;
-            chilipeppr.load("#com-chilipeppr-widget-flash-instance",
-                "http://fiddle.jshell.net/chilipeppr/90698kax/show/light/",
+        loadSpjsWidget: function(callback) {
+
+            var that = this;
+
+            chilipeppr.load(
+                "#com-chilipeppr-widget-serialport-instance",
+                "http://fiddle.jshell.net/chilipeppr/vetj5fvx/show/light/",
                 function() {
-                    console.log("mycallback got called after loading flash msg module");
-                    cprequire(["inline:com-chilipeppr-elem-flashmsg"], function(fm) {
+                    console.log("mycallback got called after loading spjs module");
+                    cprequire(["inline:com-chilipeppr-widget-serialport"], function(spjs) {
                         //console.log("inside require of " + fm.id);
-                        fm.init();
+                        spjs.setSingleSelectMode();
+                        spjs.init({
+                            isSingleSelectMode: true,
+                            defaultBuffer: "default",
+                            defaultBaud: 115200,
+                            bufferEncouragementMsg: 'For your device please choose the "default" buffer in the pulldown and a 115200 baud rate before connecting.'
+                        });
+                        //spjs.showBody();
+                        //spjs.consoleToggle();
+
+                        if (callback) callback(spjs);
+
                     });
                 }
             );
         },
         /**
-         * Load the workspace menu.
+         * Load the workspace menu and show the pubsubviewer and fork links using
+         * our pubsubviewer widget that makes those links for us.
          */
-        loadWorkspaceMenu: function() {
+        loadWorkspaceMenu: function(callback) {
             // Workspace Menu with Workspace Billboard
             var that = this;
             chilipeppr.load(
@@ -177,13 +213,15 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
                     require(['inline:com-chilipeppr-elem-pubsubviewer'], function(pubsubviewer) {
 
                         var el = $('#' + that.id + ' .com-chilipeppr-ws-menu .dropdown-menu-ws');
-                        console.log("got callback for attachto menu for workspace for nodemcu.. attaching to el:", el);
+                        console.log("got callback for attachto menu for workspace. attaching to el:", el);
 
                         pubsubviewer.attachTo(
                             el,
                             that,
                             "Workspace"
                         );
+                        
+                        if (callback) callback();
                     });
                 }
             );
@@ -209,9 +247,9 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
 
 
 
-                    <div class="com-chilipeppr-ws-hdr well">Workspace - Sample
-
-
+                    <div class="com-chilipeppr-ws-hdr well">
+                        
+                        Workspace - Sample
 
                         <div class="com-chilipeppr-ws-menu pull-right">
                             <div class="btn-group">
@@ -231,15 +269,12 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
                             </div>
                         </div>
 
-                        <div class="xwell xcom-chilipeppr-ws-hdr nodemcu-commands xhidden" style="padding-top:10px;">
-                        </div>    
-
                     </div>
 
 
 
-                    <div id="nodemcu-filelist-instance">
-                        File List goes here
+                    <div id="mywidget1-instance">
+                        Widget 1 goes here
                     </div>
 
 
@@ -249,17 +284,20 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
 
                 <!-- Center Column -->
                 <div class="col-md-5 col-nopadrt">
-                    <div id="com-chilipeppr-widget-luaeditor-instance"></div>
+                    <div id="mywidget2-instance">
+                        Widget 2 goes here
+                    </div>
                 </div>
 
                 <!-- Right Column -->
                 <div class="col-md-3 col-nopadrt">
-                    <div id="spjsWidget"></div>
-
-                    <div id="com-chilipeppr-widget-nodemcu-docs-instance"></div>
                     
-                    <div id="nodemcu-sample-code">
-                        Sample code goes here
+                    <div id="com-chilipeppr-widget-serialport-instance">
+                        Widget 3 goes here
+                    </div>
+                    
+                    <div id="mywidget3-instance">
+                        Widget 3 goes here
                     </div>
 
                 </div>
