@@ -67,6 +67,9 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
             this.loadConsoleWidget(function() {
                 setTimeout(function() { $(window).trigger('resize'); }, 100);
             });
+            
+            this.loadTemplateWidget();
+            
             // Create our workspace upper right corner triangle menu
             this.loadWorkspaceMenu();
             // Add our billboard to the menu (has name, url, picture of workspace)
@@ -111,6 +114,29 @@ cpdefine("inline:com-chilipeppr-workspace-sample", ["chilipeppr_ready"], functio
          */
         onResize: function() {
             if (this.widgetConsole) this.widgetConsole.resize();
+        },
+        /**
+         * Load the Template widget via chilipeppr.load() so folks have a sample
+         * widget they can fork as a starting point for their own.
+         */
+        loadTemplateWidget: function(callback) {
+
+            chilipeppr.load(
+                "#com-chilipeppr-widget-template-instance",
+                "http://raw.githubusercontent.com/chilipeppr/widget-template/master/auto-generated-widget.html",
+                function() {
+                    // Callback after widget loaded into #myDivWidgetTemplate
+                    // Now use require.js to get reference to instantiated widget
+                    cprequire(
+                        ["inline:com-chilipeppr-widget-template"], // the id you gave your widget
+                        function(myObjWidgetTemplate) {
+                            // Callback that is passed reference to the newly loaded widget
+                            console.log("Widget / Template just got loaded.", myObjWidgetTemplate);
+                            myObjWidgetTemplate.init();
+                        }
+                    );
+                }
+            );
         },
         /**
          * Load the Serial Port JSON Server widget via chilipeppr.load()
